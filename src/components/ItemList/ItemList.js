@@ -4,7 +4,8 @@ import {productList} from '../../data/data.js'
 import { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { useParams } from 'react-router-dom';
-
+import db from '../../firebase'
+import { collection, getDocs} from 'firebase/firestore'
 
 
 
@@ -14,11 +15,19 @@ const CardList = ({children}) => {
 
     const [products, setProducts] = useState([])
 
-    const getProducts = () => {
-        return new Promise((resolve, reject) => {
-            return resolve(productList)
-        })
-    } 
+    const getProducts = async () => {
+      const itemsCollection = collection (db, 'items')
+      const itemsSnapshot =  await getDocs (itemsCollection)
+     const prodList = itemsSnapshot.docs.map ((doc) => {
+            let item = doc.data()
+            item.id = doc.id
+            return item
+           
+      }) 
+      return prodList
+
+    
+   };
 
     useEffect( () => {
         setProducts([])
